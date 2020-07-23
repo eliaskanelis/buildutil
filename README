@@ -1,0 +1,13 @@
+# Buildutils
+
+Utilities for build system
+
+### Installation
+
+```sh
+$ pip install buildutils
+```
+
+# License
+
+MIT

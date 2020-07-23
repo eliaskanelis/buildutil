@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+class IniParser():
+	def __init__(self):
+		print("Hello")
+
+
+def main():
+	p = IniParser()
+
+
+if __name__ == "__main__":
+	main()
