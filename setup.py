@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 #-------------------------------------------------------------------------------
 
 # Package name
-name="buildutils"
+name="buildutil"
 
 # Import version info
 exec(open(path.join(here, '{}/version.py'.format(name))).read())
@@ -29,8 +29,8 @@ setup(
 	long_description = long_description,
 	author = __author__,
 	author_email = __email__,
-	url = 'https://github.com/tedicreations/buildutils',
-	download_url = 'https://github.com/TediCreations/buildutils/archive/' + __version__ + '.tar.gz',
+	url = 'https://github.com/tedicreations/buildutil',
+	download_url = 'https://github.com/TediCreations/buildutil/archive/' + __version__ + '.tar.gz',
 	keywords = ['build', 'make', 'util'],
 	#install_requires=[],
 	classifiers=[
