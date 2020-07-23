@@ -5,7 +5,7 @@ Utilities for build system
 ### Installation
 
 ```sh
-$ pip install buildutils
+$ pip install buildutil
 ```
 
 # License
