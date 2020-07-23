@@ -15,7 +15,7 @@ name="buildutil"
 exec(open(path.join(here, '{}/version.py'.format(name))).read())
 
 # Long description
-with open(path.join(here, 'README'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 #-------------------------------------------------------------------------------
@@ -27,6 +27,7 @@ setup(
 	license = __license__,
 	description = 'Build utils',
 	long_description = long_description,
+	long_description_content_type='text/markdown',
 	author = __author__,
 	author_email = __email__,
 	url = 'https://github.com/tedicreations/buildutil',
@@ -39,8 +40,6 @@ setup(
 		'Topic :: Software Development :: Build Tools',
 		'License :: OSI Approved :: MIT License',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.4',
-		'Programming Language :: Python :: 3.5',
 		'Programming Language :: Python :: 3.6',
 	],
 )
