@@ -6,6 +6,7 @@ package:
 clean:
 	rm -rf MANIFEST
 	rm -rf dist
+	py3clean .
 
 .PHONY: publish
 publish: clean package
