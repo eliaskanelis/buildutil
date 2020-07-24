@@ -4,7 +4,8 @@ from buildutil.iniparser import IniParser
 
 import os
 
-iniFilepath = "/tmp/test.ini"
+
+iniFilepath = "/tmp/buildutil/test.ini"
 
 
 def write(parser, testArray):

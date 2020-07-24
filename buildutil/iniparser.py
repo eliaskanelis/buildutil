@@ -2,6 +2,7 @@
 
 
 import configparser
+import os
 
 
 class IniParser():
@@ -9,9 +10,15 @@ class IniParser():
 	def __init__(self, iniPathFile=None):
 		self.iniPathFile = iniPathFile
 		ini = configparser.ConfigParser()
+		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
-		# Create ini file ifit does not exist
+		# Create directory if it does not exist
+		iniDirpath = os.path.dirname(self.iniPathFile)
+		if os.path.isdir(iniDirpath) is False:
+			os.makedirs(iniDirpath)
+
+		# Create ini file if it does not exist
 		try:
 			with open(self.iniPathFile, 'w') as configfile:
 				ini.write(configfile)
@@ -22,6 +29,7 @@ class IniParser():
 	def read(self, section, key):
 		# Read ini file
 		ini = configparser.ConfigParser()
+		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
 		# Validate
@@ -69,6 +77,7 @@ class IniParser():
 
 		# Read ini file
 		ini = configparser.ConfigParser()
+		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
 		# Validate
