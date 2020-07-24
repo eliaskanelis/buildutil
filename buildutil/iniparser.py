@@ -8,14 +8,18 @@ import os
 class IniParser():
 
 	def __init__(self, iniPathFile=None):
-		self.iniPathFile = iniPathFile
+		# Validate
+		if iniPathFile is None:
+			raise Exception("Test")
+
+		self.iniPathFile = os.path.abspath(iniPathFile)
 		ini = configparser.ConfigParser()
 		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
 		# Create directory if it does not exist
 		iniDirpath = os.path.dirname(self.iniPathFile)
-		if os.path.isdir(iniDirpath) is False:
+		if os.path.isdir(iniDirpath) == False:
 			os.makedirs(iniDirpath)
 
 		# Create ini file if it does not exist
