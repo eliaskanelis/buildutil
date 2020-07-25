@@ -33,7 +33,12 @@ def checkTestArray(parser, testArray, col):
 
 
 def start():
+	# Make sure the inifile is removed before the test
+	if os.path.exists(iniFilepath):
+		os.remove(iniFilepath)
 	assert os.path.exists(iniFilepath) == False
+
+	# Init parser
 	parser = IniParser(iniFilepath)
 	assert os.path.exists(iniFilepath) == True
 	return parser
@@ -46,6 +51,7 @@ def cleanup():
 	assert os.path.exists(iniFilepath) == False
 
 
+############################################################
 
 
 def test_types():
@@ -67,38 +73,72 @@ def test_types():
 	cleanup()
 
 
-def test_special():
+def test_invalid():
 
 	col = 3
 	testArray = [
 		# Section    Key       Value
-		#["",         "String", "a1" ],
-		#["DEFAULT",  "",       "b2" ],
-		#["",         "",       "c3" ],
-		#["DEFAULT",  None,     "d4" ],
-		#[None,       "Float",  "e5" ]
-		#[None,       None,     "f6" ]
+		["DEFAULT",  "",       "b2" ],
+		["",         "",       "c3" ],
+		["DEFAULT",  None,     "d4" ],
+		[None,       None,     "f6" ],
 	]
 
-	#parser = start()
-	#write(parser, testArray)
-	#checkTestArray(parser, testArray, col)
-	#cleanup(iniFilepath)
+	parser = start()
+	write(parser, testArray)
 
+	expectedArray = [
+		# Section    Key       Value
+		#["DEFAULT", "",       "b2" ],
+		#["",        "",       "c3" ],
+		#["DEFAULT", None,     "d4" ],
+		#[None,      None,     "f6" ],
+	]
+
+	checkTestArray(parser, expectedArray, col)
+	cleanup()
+
+
+def test_noneSection():
 
 	parser = start()
 	parser.write(None, "test", "out")
-	#check(parser, "DEFAULT", "test", "out")
+	check(parser, "DEFAULT", "test", "out")
 	cleanup()
 
 
 
-def test_invalid():
+def test_emptySection():
+
+	parser = start()
+	parser.write("", "test", "out")
+	check(parser, "DEFAULT", "test", "out")
+	cleanup()
+
+
+
+def test_writtenBoolean():
 	col = 3
 	testArray = [
-		# Section    Key         Value
-		[None, "Invalid1", "True"  ],
-		[None, "Invalid2", "False" ]
+		# Section  Key         Value
+		["VALID",  "Invalid1", True    ],
+		["VALID",  "Invalid2", False   ]
+		["VALID",  "Invalid3", "True"  ],
+		["VALID",  "Invalid4", "False" ]
+	]
+
+	parser = start()
+	write(parser, testArray)
+	checkTestArray(parser, testArray, col)
+	cleanup()
+
+
+def test_writtenBoolean():
+	col = 3
+	testArray = [
+		# Section  Key         Value
+		["VALID",  "Invalid1", "1"    ],
+		["VALID",  "Invalid2", "3.14" ]
 	]
 
 	parser = start()

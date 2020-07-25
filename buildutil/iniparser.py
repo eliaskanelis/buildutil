@@ -8,7 +8,8 @@ import os
 class IniParser():
 
 	def __init__(self, iniPathFile=None):
-		# Validate
+		"""Create (if not present) an inifile"""
+		# Validate user input
 		if iniPathFile is None:
 			raise Exception("IniPathFile is None")
 
@@ -31,16 +32,22 @@ class IniParser():
 
 
 	def read(self, section, key):
+		"""Acquire the value of a sector key pair or None"""
 		# Read ini file
 		ini = configparser.ConfigParser()
 		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
 		# Validate
-		#if section == "" or section is None:
-		#	section = "DEFAULT"
-		#if section == None or section == "DEFAULT":
-		#	section = None
+		if section == "":
+			section = "DEFAULT"
+
+		if section is None:
+			section = "DEFAULT"
+
+		if key == "" or key is None:
+			return
+
 
 		if key == "" or key is None:
 			return
@@ -78,7 +85,7 @@ class IniParser():
 
 
 	def write(self, section, key, value, update=True):
-
+		"""Write a value to a sector key pair"""
 		# Read ini file
 		ini = configparser.ConfigParser()
 		ini.optionxform = str
@@ -86,8 +93,7 @@ class IniParser():
 
 		# Validate
 		if section == "":
-			raise Exception("Section can not be empty string")
-			return
+			section = "DEFAULT"
 
 		if section is None:
 			section = "DEFAULT"
@@ -139,28 +145,23 @@ class IniParser():
 
 
 	def get(self):
-		ini = configparser.ConfigParser()
+		ini = configparser.ConfigParser(default_section=None)
 		ini.optionxform = str
 		ini.read(self.iniPathFile)
 
 		lst = list()
 
-		#print("-"*80)
-		#sections = ini.defaults()
-		print(sections)
 		sections = ini.sections()
 		for section in sections:
-			#print(f"Section: {section}")
 			keys = ini.options(section)
 			for key in keys:
 				value = self.read(section, key)
-				#print(f"    {key} = {value}")
 				d = dict()
 				d["{section}"] = section
 				d["{key}"]     = key
 				d["{value}"]   = value
 				lst.append(d)
-		#print("-"*80)
+
 		return lst
 
 
@@ -176,19 +177,22 @@ def main():
 	section = "section"
 	key = "key"
 	value = "value"
-	parser.write(section, key, value, update=False)
-	parser.write(None,       "key1", "default", update=False)
-	parser.write("section2", "key2", "value2",  update=False)
-	parser.write("section3", "key3", "value3",  update=False)
+	parser.write(None,       None,   "SilentIgnore1", update=False)
+	parser.write("IGNOREME", None,   "SilentIgnore2", update=False)
+	parser.write(section,    key,    value,           update=False)
+	parser.write(None,       "key1", "default",       update=False)
+	parser.write("Sec1",     "key1", "value1",        update=False)
+	parser.write("sec2",     "key2", "value2",        update=False)
 
 	# Read back
 	rv = parser.read(section, key)
 
-	# Validate and see results
-	print(parser)
+	# Validate 
 	if rv != value:
 		raise Exception("FAILLURE!!")
-	#print(parser.get())
+
+	# See results
+	print(parser)
 	for d in parser.get():
 		section = d["{section}"]
 		key     = d["{key}"]
