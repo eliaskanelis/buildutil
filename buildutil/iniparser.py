@@ -122,9 +122,9 @@ class IniParser():
 	def __str__(self):
 		rv = f"From Ini file: '{self.iniPathFile}'\n"
 		for d in self.get():
-			section = d["{section}"]
-			key     = d["{key}"]
-			value   = d["{value}"]
+			section = d["section"]
+			key     = d["key"]
+			value   = d["value"]
 			rv += f"[{section}][{key}] = '{value}'\n"
 
 		return rv
@@ -143,9 +143,9 @@ class IniParser():
 			for key in keys:
 				value = self.read(section, key)
 				d = dict()
-				d["{section}"] = section
-				d["{key}"]     = key
-				d["{value}"]   = value
+				d["section"] = section
+				d["key"]     = key
+				d["value"]   = value
 				lst.append(d)
 
 		return lst
