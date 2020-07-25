@@ -120,12 +120,12 @@ class IniParser():
 
 
 	def __str__(self):
-		rv = ""
-		try:
-			with open(self.iniPathFile, 'r') as configfile:
-				rv = configfile.read()
-		except:
-			raise Exception(f"Could read to '{self.iniPathFile}'")
+		rv = f"From Ini file: '{self.iniPathFile}'\n"
+		for d in self.get():
+			section = d["{section}"]
+			key     = d["{key}"]
+			value   = d["{value}"]
+			rv += f"[{section}][{key}] = '{value}'\n"
 
 		return rv
 
@@ -179,11 +179,6 @@ def main():
 
 	# See results
 	print(parser)
-	for d in parser.get():
-		section = d["{section}"]
-		key     = d["{key}"]
-		value   = d["{value}"]
-		print(f"[{section}][{key}] = '{value}'")
 
 	# Delete ini file
 	import os
