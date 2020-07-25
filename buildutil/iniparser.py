@@ -39,15 +39,8 @@ class IniParser():
 		ini.read(self.iniPathFile)
 
 		# Validate
-		if section == "":
+		if section == "" or section is None:
 			section = "DEFAULT"
-
-		if section is None:
-			section = "DEFAULT"
-
-		if key == "" or key is None:
-			return
-
 
 		if key == "" or key is None:
 			return
@@ -55,11 +48,8 @@ class IniParser():
 		# Get configuration
 		rv = None
 		try:
-			rv = ini[section][key]
-			#rv = ini.get(section, key)
+			rv = ini.get(section, key)
 		except Exception as e:
-			#raise(e)
-			#print(f"{section} {key}")
 			rv = None
 
 
@@ -68,8 +58,6 @@ class IniParser():
 			rv = True
 		elif rv == "False":
 			rv = False
-		#elif rv == "None":
-		#	rv = None
 		else:
 			try:
 				return int(rv)
@@ -92,10 +80,7 @@ class IniParser():
 		ini.read(self.iniPathFile)
 
 		# Validate
-		if section == "":
-			section = "DEFAULT"
-
-		if section is None:
+		if section == "" or section is None:
 			section = "DEFAULT"
 
 		if key == "" or key is None:
@@ -132,6 +117,7 @@ class IniParser():
 			raise Exception(f"Could not write to '{self.iniPathFile}'")
 
 		#print(f"Wrote: [{section_key}] = '{value}")
+
 
 	def __str__(self):
 		rv = ""
@@ -187,7 +173,7 @@ def main():
 	# Read back
 	rv = parser.read(section, key)
 
-	# Validate 
+	# Validate
 	if rv != value:
 		raise Exception("FAILLURE!!")
 
