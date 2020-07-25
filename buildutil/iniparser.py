@@ -10,7 +10,7 @@ class IniParser():
 	def __init__(self, iniPathFile=None):
 		# Validate
 		if iniPathFile is None:
-			raise Exception("Test")
+			raise Exception("IniPathFile is None")
 
 		self.iniPathFile = os.path.abspath(iniPathFile)
 		ini = configparser.ConfigParser()
@@ -85,8 +85,12 @@ class IniParser():
 		ini.read(self.iniPathFile)
 
 		# Validate
-		if section == "" or section is None:
+		if section == "":
+			raise Exception("Section can not be empty string")
 			return
+
+		if section is None:
+			section = "DEFAULT"
 
 		if key == "" or key is None:
 			return
@@ -134,6 +138,33 @@ class IniParser():
 		return rv
 
 
+	def get(self):
+		ini = configparser.ConfigParser()
+		ini.optionxform = str
+		ini.read(self.iniPathFile)
+
+		lst = list()
+
+		#print("-"*80)
+		#sections = ini.defaults()
+		print(sections)
+		sections = ini.sections()
+		for section in sections:
+			#print(f"Section: {section}")
+			keys = ini.options(section)
+			for key in keys:
+				value = self.read(section, key)
+				#print(f"    {key} = {value}")
+				d = dict()
+				d["{section}"] = section
+				d["{key}"]     = key
+				d["{value}"]   = value
+				lst.append(d)
+		#print("-"*80)
+		return lst
+
+
+
 def main():
 
 	iniFilepath = "/tmp/test.ini"
@@ -146,6 +177,9 @@ def main():
 	key = "key"
 	value = "value"
 	parser.write(section, key, value, update=False)
+	parser.write(None,       "key1", "default", update=False)
+	parser.write("section2", "key2", "value2",  update=False)
+	parser.write("section3", "key3", "value3",  update=False)
 
 	# Read back
 	rv = parser.read(section, key)
@@ -154,6 +188,12 @@ def main():
 	print(parser)
 	if rv != value:
 		raise Exception("FAILLURE!!")
+	#print(parser.get())
+	for d in parser.get():
+		section = d["{section}"]
+		key     = d["{key}"]
+		value   = d["{value}"]
+		print(f"[{section}][{key}] = '{value}'")
 
 	# Delete ini file
 	import os
