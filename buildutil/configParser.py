@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+
+from buildutil.iniparser import IniParser
+
+import os
+
+from .exception import ConfigError
+
+
+class ConfigParser():
+
+	def __init__(self, iniFilepath="setup.ini", defaultsFun=None):
+
+		# Validate user input
+		self.iniFilepath = os.path.abspath(iniFilepath)
+		if defaultsFun is None:
+			raise Exception("No defaults given to config parser")
+
+		# Write defaults values
+		self.defaults = defaultsFun()
+		parser = IniParser(self.iniFilepath)
+		for d in self.defaults:
+			parser.write(d["section"], d["key"], d["default"], update=False)
+
+
+	def read(self, section, key):
+		parser = IniParser(self.iniFilepath)
+		rv = parser.read(section, key)
+
+		return rv
+
+
+	def write(self, section, key, value):
+
+		# We do not update on None
+		if value is None:
+			return
+
+		# Find options
+		options = None
+		for d in self.defaults:
+			status = False
+			if d["section"] == section and d["key"] == key:
+				status = False
+				options = d["options"]
+
+		# Validate
+		isValid = False
+		if options is not None:
+			print(f"[{section}][{key}] found with options = {options}")
+			for o in options:
+				if o == value:
+					isValid = True
+					break
+
+			if isValid is False:
+				raise ConfigError(f"Ignoring invalid config for [{section}][{key}]: '{value}'")
+
+		# Write config
+		parser = IniParser(self.iniFilepath)
+		parser.write(section, key, value)
+
+
+
+	def __str__(self):
+		parser = IniParser(self.iniFilepath)
+		rv = parser.__str__()
+		return rv
+
+
+	def setenv(self):
+		"""Set all configs into environment variables"""
+		for el in self.get():
+			key   = el["key"]
+			value = el["value"]
+			# Set enironment variable
+			os.environ[key] = value
+			# Verify
+			if os.environ[key] != value:
+				raise ConfigError("Failed to set environment variable '{key}'")
+
+
+	def get(self):
+		parser = IniParser(self.iniFilepath)
+
+		lst = list()
+		for el in parser.get():
+			section = el["section"]
+			key = el["key"]
+			value = parser.read(section, key)
+
+			d = dict()
+			d["section"] = section
+			d["key"]     = key
+			d["value"]   = value
+			lst.append(d)
+
+		return lst
+
+
+def main():
+
+	iniFilepath = "/tmp/configparser/test.ini"
+
+	##########################################
+	# Write values
+	def getDefaults():
+		defaults = [
+			# Section    Key      Value     Available options
+			["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ],
+			["MAKE",    "TARGET", "dbg",   {"dbg",   "rel"}         ],
+
+			["INVALID", "String", "apple", {"banana", "orange"}     ]
+		]
+		col = 4
+
+		return col, defaults
+
+	parser = ConfigParser(iniFilepath=iniFilepath, defaultsFun=getDefaults)
+
+	##########################################
+	# Write non default/new values
+
+	def getExtra():
+		extra = [
+			# Section      Key            Value         Update
+			["MAKE",       "PORT",       "win32",       True  ],
+			["MAKE",       "TARGET",     "prod",        True  ],
+
+			["NONDEFAULT", "Keepme",     "I kept you!", True  ],
+
+			["UNIQUE",     "Override1",  "Original",    True  ],
+			["UNIQUE",     "Override1",  "Updated",     False ],
+
+			["UNIQUE",     "Override2",  "Original",    False ],
+			["UNIQUE",     "Override2",  "Updated",     False ]
+		]
+		col = 4
+
+		return col, extra
+
+	col, defaults = getExtra()
+	for line in defaults:
+		if len(line) == col:
+			section = line[0]
+			key     = line[1]
+			value   = line[2]
+			parser.write(section, key, value, update=False)
+
+	col, defaults = getExtra()
+	for line in defaults:
+		section = line[0]
+		key     = line[1]
+		value   = os.getenv(f"{section}_{key}")
+		#value  = os.environ.get(f"{section}_{key}")
+
+		print(f"ENV: {section}_{key}: {value}")
+
+	##########################################
+	# Delete ini file
+
+	#import os
+	if os.path.exists(iniFilepath):
+		os.remove(iniFilepath)
+
+
+if __name__ == "__main__":
+	main()
