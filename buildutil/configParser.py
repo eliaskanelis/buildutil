@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
-from buildutil.iniparser import IniParser
+from iniparser import IniParser
 
 import os
-
-from .exception import ConfigError
-
 
 class ConfigParser():
 
@@ -54,7 +51,7 @@ class ConfigParser():
 					break
 
 			if isValid is False:
-				raise ConfigError(f"Ignoring invalid config for [{section}][{key}]: '{value}'")
+				raise Exception(f"Ignoring invalid config for [{section}][{key}]: '{value}'")
 
 		# Write config
 		parser = IniParser(self.iniFilepath)
@@ -105,16 +102,24 @@ def main():
 	##########################################
 	# Write values
 	def getDefaults():
+		lst = list()
 		defaults = [
-			# Section    Key      Value     Available options
+			# Section    Key      Default  Options
 			["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ],
 			["MAKE",    "TARGET", "dbg",   {"dbg",   "rel"}         ],
 
 			["INVALID", "String", "apple", {"banana", "orange"}     ]
 		]
-		col = 4
 
-		return col, defaults
+		for el in defaults:
+			d = dict()
+			d["section"] = el[0]
+			d["key"]     = el[1]
+			d["default"] = el[2]
+			d["options"] = el[3]
+			lst.append(d)
+
+		return lst
 
 	parser = ConfigParser(iniFilepath=iniFilepath, defaultsFun=getDefaults)
 
@@ -124,8 +129,8 @@ def main():
 	def getExtra():
 		extra = [
 			# Section      Key            Value         Update
-			["MAKE",       "PORT",       "win32",       True  ],
-			["MAKE",       "TARGET",     "prod",        True  ],
+			#["MAKE",       "PORT",       "win32",       True  ],
+			#["MAKE",       "TARGET",     "prod",        True  ],
 
 			["NONDEFAULT", "Keepme",     "I kept you!", True  ],
 
@@ -145,8 +150,9 @@ def main():
 			section = line[0]
 			key     = line[1]
 			value   = line[2]
-			parser.write(section, key, value, update=False)
+			parser.write(section, key, value)
 
+	parser.setenv()
 	col, defaults = getExtra()
 	for line in defaults:
 		section = line[0]
