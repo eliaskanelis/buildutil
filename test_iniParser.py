@@ -107,14 +107,12 @@ def test_noneSection():
 	cleanup()
 
 
-
 def test_emptySection():
 
 	parser = start()
 	parser.write("", "test", "out")
 	check(parser, "DEFAULT", "test", "out")
 	cleanup()
-
 
 
 def test_writtenBoolean():

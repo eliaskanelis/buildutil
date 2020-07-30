@@ -1,23 +1,39 @@
 #!/usr/bin/env python3
 
-from iniparser import IniParser
+from .iniparser import IniParser
 
 import os
 
+def array2Dict(array):
+	lst = list()
+	for l in array:
+		d = dict()
+		d["section"] = l[0]
+		d["key"]     = l[1]
+		d["default"] = l[2]
+		d["options"] = l[3]
+		lst.append(d)
+
+	return lst
+
+
 class ConfigParser():
 
-	def __init__(self, iniFilepath="setup.ini", defaultsFun=None):
+	def __init__(self, iniFilepath="setup.ini", defaults=None):
 
 		# Validate user input
+		if iniFilepath is None:
+			raise Exception("Invalid iniFilepath")
+
+		# User input
 		self.iniFilepath = os.path.abspath(iniFilepath)
-		if defaultsFun is None:
-			raise Exception("No defaults given to config parser")
+		self.defaults = defaults
 
 		# Write defaults values
-		self.defaults = defaultsFun()
-		parser = IniParser(self.iniFilepath)
-		for d in self.defaults:
-			parser.write(d["section"], d["key"], d["default"], update=False)
+		if self.defaults is not None:
+			parser = IniParser(self.iniFilepath)
+			for d in self.defaults:
+				parser.write(d["section"], d["key"], d["default"], update=False)
 
 
 	def read(self, section, key):
@@ -35,11 +51,12 @@ class ConfigParser():
 
 		# Find options
 		options = None
-		for d in self.defaults:
-			status = False
-			if d["section"] == section and d["key"] == key:
+		if self.defaults is not None:
+			for d in self.defaults:
 				status = False
-				options = d["options"]
+				if d["section"] == section and d["key"] == key:
+					status = False
+					options = d["options"]
 
 		# Validate
 		isValid = False
@@ -99,6 +116,9 @@ def main():
 
 	iniFilepath = "/tmp/configparser/test.ini"
 
+	if os.path.exists(iniFilepath):
+		os.remove(iniFilepath)
+
 	##########################################
 	# Write values
 	def getDefaults():
@@ -121,7 +141,7 @@ def main():
 
 		return lst
 
-	parser = ConfigParser(iniFilepath=iniFilepath, defaultsFun=getDefaults)
+	parser = ConfigParser(iniFilepath=iniFilepath, defaults=getDefaults())
 
 	##########################################
 	# Write non default/new values
@@ -153,19 +173,18 @@ def main():
 			parser.write(section, key, value)
 
 	parser.setenv()
+	print(parser)
 	col, defaults = getExtra()
 	for line in defaults:
 		section = line[0]
 		key     = line[1]
-		value   = os.getenv(f"{section}_{key}")
-		#value  = os.environ.get(f"{section}_{key}")
+		value   = os.getenv(key)
 
-		print(f"ENV: {section}_{key}: {value}")
+		print(f"ENV: {key}: {value}")
 
 	##########################################
 	# Delete ini file
 
-	#import os
 	if os.path.exists(iniFilepath):
 		os.remove(iniFilepath)
 
