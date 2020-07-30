@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from buildutil.iniparser import IniParser
+from buildutil.iniParser import IniParser
 
 import os
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .iniparser import IniParser
+from .iniParser import IniParser
 
 import os
 
@@ -61,7 +61,6 @@ class ConfigParser():
 		# Validate
 		isValid = False
 		if options is not None:
-			print(f"[{section}][{key}] found with options = {options}")
 			for o in options:
 				if o == value:
 					isValid = True

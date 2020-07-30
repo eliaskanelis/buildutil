@@ -1,2 +1,2 @@
-from buildutil.iniparser    import IniParser
+from buildutil.iniParser    import IniParser
 from buildutil.configParser import ConfigParser
