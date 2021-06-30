@@ -79,6 +79,29 @@ def test_readDefaults():
 	cleanup()
 
 
+def test_types():
+
+	cleanup()
+
+	lst = array2Dict([
+		# Section    Key      Default  Options
+		["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ],
+		["MAKE",    "TARGET", "True",  {"True",  "False"}       ],
+		#["MAKE",    "test",   True,    {True,    False}         ],
+	])
+
+	parser = ConfigParser(iniFilepath, lst)
+	parser.setenv()
+
+	for d in lst:
+		section = d["section"]
+		key = d["key"]
+		expected_value = d["default"]
+		check(section, key, expected_value)
+
+	cleanup()
+
+
 def test_writeRead():
 
 	cleanup()

@@ -87,10 +87,10 @@ class ConfigParser():
 			key   = el["key"]
 			value = el["value"]
 			# Set enironment variable
-			os.environ[key] = value
+			os.environ[key] = str(value)
 			# Verify
-			if os.environ[key] != value:
-				raise ConfigError("Failed to set environment variable '{key}'")
+			if os.environ[key] != str(value):
+				raise Exception(f"Failed to set environment variable '{key}'")
 
 
 	def get(self):
