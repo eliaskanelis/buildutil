@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 import configparser
 import os
 
@@ -20,16 +19,15 @@ class IniParser():
 
 		# Create directory if it does not exist
 		iniDirpath = os.path.dirname(self.iniPathFile)
-		if os.path.isdir(iniDirpath) == False:
+		if os.path.isdir(iniDirpath) is False:
 			os.makedirs(iniDirpath)
 
 		# Create ini file if it does not exist
 		try:
 			with open(self.iniPathFile, 'w') as configfile:
 				ini.write(configfile)
-		except:
+		except Exception:
 			raise Exception(f"Could not create '{self.iniPathFile}'")
-
 
 	def read(self, section, key):
 		"""Acquire the value of a sector key pair or None"""
@@ -49,9 +47,8 @@ class IniParser():
 		rv = None
 		try:
 			rv = ini.get(section, key)
-		except Exception as e:
+		except Exception:
 			rv = None
-
 
 		# Translate value
 		if rv == "True":
@@ -70,7 +67,6 @@ class IniParser():
 				pass
 
 		return rv
-
 
 	def write(self, section, key, value, update=True):
 		"""Write a value to a sector key pair"""
@@ -92,7 +88,7 @@ class IniParser():
 			return
 
 		# Update
-		if update is False and rv != None:
+		if update is False and rv is not None:
 			return
 
 		# Prepare value
@@ -106,29 +102,27 @@ class IniParser():
 
 		try:
 			ini.set(section, key, value)
-		except:
+		except Exception:
 			raise Exception(f"Could not write [{section}][{key}] = {value}")
 
 		# Write ini file
 		try:
 			with open(self.iniPathFile, 'w') as configfile:
 				ini.write(configfile)
-		except:
+		except Exception:
 			raise Exception(f"Could not write to '{self.iniPathFile}'")
 
-		#print(f"Wrote: [{section_key}] = '{value}")
-
+		# print(f"Wrote: [{section_key}] = '{value}")
 
 	def __str__(self):
 		rv = f"From Ini file: '{self.iniPathFile}'\n"
 		for d in self.get():
 			section = d["section"]
-			key     = d["key"]
-			value   = d["value"]
+			key = d["key"]
+			value = d["value"]
 			rv += f"[{section}][{key}] = '{value}'\n"
 
 		return rv
-
 
 	def get(self):
 		ini = configparser.ConfigParser(default_section=None)
@@ -144,12 +138,11 @@ class IniParser():
 				value = self.read(section, key)
 				d = dict()
 				d["section"] = section
-				d["key"]     = key
-				d["value"]   = value
+				d["key"] = key
+				d["value"] = value
 				lst.append(d)
 
 		return lst
-
 
 
 def main():
@@ -163,12 +156,12 @@ def main():
 	section = "section"
 	key = "key"
 	value = "value"
-	parser.write(None,       None,   "SilentIgnore1", update=False)
-	parser.write("IGNOREME", None,   "SilentIgnore2", update=False)
-	parser.write(section,    key,    value,           update=False)
-	parser.write(None,       "key1", "default",       update=False)
-	parser.write("Sec1",     "key1", "value1",        update=False)
-	parser.write("sec2",     "key2", "value2",        update=False)
+	parser.write(None, None, "SilentIgnore1", update=False)
+	parser.write("IGNOREME", None, "SilentIgnore2", update=False)
+	parser.write(section, key, value, update=False)
+	parser.write(None, "key1", "default", update=False)
+	parser.write("Sec1", "key1", "value1", update=False)
+	parser.write("sec2", "key2", "value2", update=False)
 
 	# Read back
 	rv = parser.read(section, key)

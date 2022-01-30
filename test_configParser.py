@@ -18,7 +18,7 @@ def cleanup():
 
 
 def check(section, key, expected_value):
-	value  = os.environ.get(key)
+	value = os.environ.get(key)
 	assert value == expected_value
 
 
@@ -29,7 +29,7 @@ def test_noDefaultsArgGiven():
 
 	cleanup()
 
-	parser = ConfigParser(iniFilepath)
+	ConfigParser(iniFilepath)
 
 	assert os.path.exists(iniFilepath) is False
 	cleanup()
@@ -39,7 +39,7 @@ def test_NoneDefaultsGiven():
 
 	cleanup()
 
-	parser = ConfigParser(iniFilepath, None)
+	ConfigParser(iniFilepath, None)
 
 	assert os.path.exists(iniFilepath) is False
 	cleanup()
@@ -50,7 +50,7 @@ def test_noIniFilepathGiven():
 	cleanup()
 
 	with pytest.raises(Exception):
-		parser = ConfigParser(None)
+		ConfigParser(None)
 
 	assert os.path.exists(iniFilepath) is False
 	cleanup()
@@ -61,10 +61,10 @@ def test_readDefaults():
 	cleanup()
 
 	lst = array2Dict([
-		# Section    Key      Default  Options
-		["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ],
-		["MAKE",    "TARGET", "dbg",   {"dbg",   "rel"}         ],
-		["MAKE",    "test",   "dbg",   {"dbg",   "rel"}         ],
+		# Section Key Default Options
+		["MAKE", "PORT", "posix", {"posix", "stm32f072rb"}],
+		["MAKE", "TARGET", "dbg", {"dbg", "rel"}],
+		["MAKE", "test", "dbg", {"dbg", "rel"}],
 	])
 
 	parser = ConfigParser(iniFilepath, lst)
@@ -84,10 +84,10 @@ def test_types():
 	cleanup()
 
 	lst = array2Dict([
-		# Section    Key      Default  Options
-		["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ],
-		["MAKE",    "TARGET", "True",  {"True",  "False"}       ],
-		#["MAKE",    "test",   True,    {True,    False}         ],
+		# Section Key Default Options
+		["MAKE", "PORT", "posix", {"posix", "stm32f072rb"}],
+		["MAKE", "TARGET", "True", {"True", "False"}],
+		# ["MAKE", "test", True, {True, False}],
 	])
 
 	parser = ConfigParser(iniFilepath, lst)
@@ -133,7 +133,7 @@ def test_overWriteDefaultWithValid():
 
 	lst = array2Dict([
 		# Section    Key      Default  Options
-		["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ]
+		["MAKE", "PORT", "posix", {"posix", "stm32f072rb"}]
 	])
 
 	parser = ConfigParser(iniFilepath, lst)
@@ -158,7 +158,7 @@ def test_overWriteDefaultWithInvalid():
 
 	lst = array2Dict([
 		# Section    Key      Default  Options
-		["MAKE",    "PORT",   "posix", {"posix", "stm32f072rb"} ]
+		["MAKE", "PORT", "posix", {"posix", "stm32f072rb"}]
 	])
 
 	parser = ConfigParser(iniFilepath, lst)
@@ -180,6 +180,7 @@ def test_overWriteDefaultWithInvalid():
 
 def main():
 	pass
+
 
 if __name__ == "__main__":
 	main()
